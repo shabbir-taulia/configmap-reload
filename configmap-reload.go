@@ -138,13 +138,13 @@ func main() {
 	}()
 
 	for _, d := range volumeDirs {
-		log.Printf("Watching directory: %q", d)
+		log.Println("msg:", "Watching directory", d)
 		err = watcher.Add(d)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-
+    log.Println("msg:", "Listening on address", "0.0.0.0", *listenAddress)
 	log.Fatal(serverMetrics(*listenAddress, *metricPath))
 }
 
@@ -181,6 +181,10 @@ func serverMetrics(listenAddress, metricsPath string) error {
 			</body>
 			</html>
 		`))
+	})
+	http.HandleFunc("/-/healthy", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "OK")
 	})
 	return http.ListenAndServe(listenAddress, nil)
 }
